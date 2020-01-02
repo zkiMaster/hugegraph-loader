@@ -68,7 +68,7 @@ public class LoadMapping implements Checkable {
         try {
             mapping.check();
         } catch (IllegalArgumentException e) {
-            throw new LoadException("Invalid mapping mapping file '%s'",
+            throw new LoadException("Invalid mapping file '%s'",
                                     e, options.file);
         }
         return mapping;

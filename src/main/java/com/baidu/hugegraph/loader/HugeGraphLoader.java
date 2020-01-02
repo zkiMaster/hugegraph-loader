@@ -35,10 +35,10 @@ import com.baidu.hugegraph.loader.exception.LoadException;
 import com.baidu.hugegraph.loader.executor.GroovyExecutor;
 import com.baidu.hugegraph.loader.executor.LoadContext;
 import com.baidu.hugegraph.loader.executor.LoadOptions;
-import com.baidu.hugegraph.loader.reader.InputReader;
-import com.baidu.hugegraph.loader.reader.line.Line;
 import com.baidu.hugegraph.loader.mapping.InputStruct;
 import com.baidu.hugegraph.loader.mapping.LoadMapping;
+import com.baidu.hugegraph.loader.reader.InputReader;
+import com.baidu.hugegraph.loader.reader.line.Line;
 import com.baidu.hugegraph.loader.task.ParseTaskBuilder;
 import com.baidu.hugegraph.loader.task.ParseTaskBuilder.ParseTask;
 import com.baidu.hugegraph.loader.task.TaskManager;
@@ -61,9 +61,14 @@ public final class HugeGraphLoader {
     }
 
     public HugeGraphLoader(String[] args) {
-        this.context = new LoadContext(args);
-        this.mapping = LoadMapping.of(this.context);
-        this.manager = new TaskManager(this.context);
+        try {
+            this.context = LoadContext.init(LoadOptions.parseCheckOptions(args));
+            this.mapping = LoadMapping.of(this.context);
+            this.manager = new TaskManager();
+        } catch (Throwable e) {
+            LoadContext.destroy();
+            throw e;
+        }
         this.addShutdownHook();
     }
 
@@ -151,8 +156,7 @@ public final class HugeGraphLoader {
 
     private void load(InputStruct struct, InputReader reader) {
         LOG.info("Start parsing and loading '{}'", struct);
-        ParseTaskBuilder taskBuilder = new ParseTaskBuilder(this.context,
-                                                            struct);
+        ParseTaskBuilder taskBuilder = new ParseTaskBuilder(struct);
         int batchSize = this.context.options().batchSize;
         List<Line> lines = new ArrayList<>(batchSize);
         for (boolean finished = false; !this.context.stopped() && !finished;) {
@@ -180,10 +184,13 @@ public final class HugeGraphLoader {
 
     private void stopThenShutdown() {
         LOG.info("Stop loading then shutdown HugeGraphLoader");
-        this.context.stopLoading();
-        // Wait all insert tasks finished before exit
-        this.manager.waitFinished();
-        this.manager.shutdown();
-        this.context.close();
+        try {
+            this.context.stopLoading();
+            // Wait all insert tasks finished before exit
+            this.manager.waitFinished();
+            this.manager.shutdown();
+        } finally {
+            LoadContext.destroy();
+        }
     }
 }

@@ -30,10 +30,10 @@ import com.baidu.hugegraph.loader.builder.Record;
 import com.baidu.hugegraph.loader.constant.ElemType;
 import com.baidu.hugegraph.loader.executor.LoadContext;
 import com.baidu.hugegraph.loader.executor.LoadOptions;
-import com.baidu.hugegraph.loader.metrics.LoadMetrics;
-import com.baidu.hugegraph.loader.metrics.LoadSummary;
 import com.baidu.hugegraph.loader.mapping.ElementMapping;
 import com.baidu.hugegraph.loader.mapping.InputStruct;
+import com.baidu.hugegraph.loader.metrics.LoadMetrics;
+import com.baidu.hugegraph.loader.metrics.LoadSummary;
 import com.baidu.hugegraph.loader.util.HugeClientHolder;
 import com.baidu.hugegraph.structure.GraphElement;
 import com.baidu.hugegraph.structure.graph.Edge;
@@ -52,11 +52,11 @@ public abstract class InsertTask implements Runnable {
     protected final ElementMapping mapping;
     protected final List<Record> batch;
 
-    public InsertTask(LoadContext context, InputStruct struct,
-                      ElementMapping mapping, List<Record> batch) {
+    public InsertTask(InputStruct struct, ElementMapping mapping,
+                      List<Record> batch) {
         E.checkArgument(batch != null && !batch.isEmpty(),
                         "The batch can't be null or empty");
-        this.context = context;
+        this.context = LoadContext.get();
         this.struct = struct;
         this.mapping = mapping;
         this.batch = batch;

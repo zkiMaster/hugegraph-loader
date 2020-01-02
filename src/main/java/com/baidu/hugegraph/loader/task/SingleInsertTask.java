@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import com.baidu.hugegraph.loader.builder.Record;
 import com.baidu.hugegraph.loader.constant.ElemType;
 import com.baidu.hugegraph.loader.exception.InsertException;
-import com.baidu.hugegraph.loader.executor.LoadContext;
 import com.baidu.hugegraph.loader.executor.LoadOptions;
 import com.baidu.hugegraph.loader.failure.FailureLogger;
 import com.baidu.hugegraph.loader.mapping.ElementMapping;
@@ -41,9 +40,9 @@ public class SingleInsertTask extends InsertTask {
 
     private static final Logger LOG = Log.logger(TaskManager.class);
 
-    public SingleInsertTask(LoadContext context, InputStruct struct,
-                            ElementMapping mapping, List<Record> batch) {
-        super(context, struct, mapping, batch);
+    public SingleInsertTask(InputStruct struct, ElementMapping mapping,
+                            List<Record> batch) {
+        super(struct, mapping, batch);
     }
 
     @Override

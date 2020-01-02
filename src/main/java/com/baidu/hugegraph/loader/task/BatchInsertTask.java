@@ -40,9 +40,9 @@ public class BatchInsertTask extends InsertTask {
 
     private static final Logger LOG = Log.logger(TaskManager.class);
 
-    public BatchInsertTask(LoadContext context, InputStruct struct,
-                           ElementMapping mapping, List<Record> batch) {
-        super(context, struct, mapping, batch);
+    public BatchInsertTask(InputStruct struct, ElementMapping mapping,
+                           List<Record> batch) {
+        super(struct, mapping, batch);
     }
 
     @Override
